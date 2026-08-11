@@ -15,12 +15,27 @@ Você optou por ficar no plano gratuito em tudo por enquanto (Vercel Hobby, Supa
 1. Crie uma conta grátis em https://supabase.com e um novo projeto.
 2. Em **Project Settings → Database**, copie a "Connection string" (modo "Transaction" / pooled, porta 6543) — essa será sua `DATABASE_URL`.
 
-## 2. Monitoramento de processos — Escavador
+## 2. Monitoramento automático de processos — ADIADO (decisão de 11/08)
 
-1. Crie uma conta em https://api.escavador.com e gere um token de API (Bearer token) em **Configurações → Tokens**.
-2. Esse token vai na variável `ESCAVADOR_API_TOKEN`.
-3. Ao ativar o monitoramento de um processo, o Escavador chamará o webhook `https://SEU-DOMINIO/api/webhooks/escavador` — configure isso no painel deles (confira a doc atual em api.escavador.com/v2/docs, esse fluxo pode mudar).
-4. Gere um segredo qualquer e configure-o tanto no painel do Escavador (campo de assinatura de webhook, se houver) quanto na variável `ESCAVADOR_WEBHOOK_SECRET` aqui.
+Pesquisamos Escavador, Codilo, Judit.io, JusBrasil Soluções e TrackJud/Vigilant. Nenhum ficou
+dentro do critério "self-service + orçamento baixo + monitora por número CNJ diretamente + todos
+os tribunais" ao mesmo tempo:
+
+- **Escavador**: mudou de modelo — API agora exige contato comercial (formulário + especialista), não é mais self-service.
+- **Codilo / JusBrasil Soluções**: também exigem processo comercial, preços na faixa de R$1.000+/mês.
+- **Judit.io**: self-service, cobertura ampla, mas preço pós-trial incerto/provavelmente alto para uso individual.
+- **TrackJud/Vigilant**: self-service e barato (~R$0,10/consulta), mas monitora por **CPF**, não por número de processo — exigiria redesenhar o cadastro de processo para incluir CPF da parte e criar lógica de filtro sobre os alertas.
+
+Por ora, o sistema roda **100% manual**: você cadastra processos e prazos direto no dashboard. A
+opção de monitoramento automático continua no código (`src/lib/escavador.ts`, campo
+`monitorarViaEscavador` na API `/api/processos`) — só está escondida na tela. Para reativar no
+futuro, é só decidir um provedor, obter o token, configurar as variáveis abaixo, e devolver o
+checkbox na UI (`src/app/dashboard/DashboardClient.tsx`).
+
+Se decidir seguir com o Escavador mais adiante (após resposta comercial deles), as variáveis
+seriam:
+- `ESCAVADOR_API_TOKEN`
+- `ESCAVADOR_WEBHOOK_SECRET` (webhook aponta para `https://SEU-DOMINIO/api/webhooks/escavador`)
 
 ## 3. E-mails de alerta — Resend
 
@@ -32,18 +47,14 @@ Você optou por ficar no plano gratuito em tudo por enquanto (Vercel Hobby, Supa
 
 1. Suba este projeto para um repositório no GitHub (posso te ajudar com isso).
 2. Crie uma conta em https://vercel.com, importe o repositório.
-3. Em **Settings → Environment Variables**, configure:
+3. Em **Settings → Environment Variables**, configure (o Escavador fica de fora por enquanto — veja seção 2):
    - `DATABASE_URL` (do Supabase)
-   - `ESCAVADOR_API_TOKEN`
-   - `ESCAVADOR_WEBHOOK_SECRET`
    - `AUTH_SECRET` (gere um valor aleatório forte, ex: `openssl rand -base64 32`)
    - `NEXTAUTH_URL` (a URL final do seu deploy, ex: `https://prazos.vercel.app`)
    - `RESEND_API_KEY`
    - `NOTIFICATIONS_FROM_EMAIL`
    - `CRON_SECRET` (gere outro valor aleatório — protege o endpoint de notificações diárias)
-4. Faça o deploy.
-5. Rode a migração no banco de produção (uma vez, do seu computador ou via terminal integrado):
-   `DATABASE_URL="<url do supabase>" npx prisma migrate deploy`
+4. Faça o deploy. A migração do banco roda sozinha nesse momento (o comando de build já inclui `prisma migrate deploy`), não precisa rodar nada manualmente.
 6. Crie seu usuário de login em produção:
    `DATABASE_URL="<url do supabase>" ADMIN_EMAIL=voce@exemplo.com ADMIN_PASSWORD=sua-senha npm run db:seed`
 

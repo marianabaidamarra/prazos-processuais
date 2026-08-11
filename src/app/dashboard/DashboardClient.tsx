@@ -270,12 +270,10 @@ export function DashboardClient({
                 <label className="mb-1 block text-xs font-medium text-zinc-700">Partes</label>
                 <input name="partes" className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-sm" />
               </div>
-              <div className="flex items-center gap-2 sm:col-span-2">
-                <input type="checkbox" name="monitorar" id="monitorar" className="h-4 w-4" />
-                <label htmlFor="monitorar" className="text-sm text-zinc-700">
-                  Monitorar automaticamente via Escavador (requer API configurada)
-                </label>
-              </div>
+              {/* Monitoramento automático (Escavador/outro provedor) desativado por ora —
+                  nenhum provedor pesquisado ficou dentro do orçamento/self-service sem
+                  mudança de arquitetura. O campo "monitorarViaEscavador" na API continua
+                  existindo e funcional; é só reativar este bloco quando decidir um provedor. */}
               <div className="sm:col-span-2">
                 <button
                   type="submit"
