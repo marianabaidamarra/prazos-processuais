@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prazos Processuais
 
-## Getting Started
+Ferramenta para acompanhamento de prazos processuais: cadastro de processos, cálculo automático de prazos (dias úteis, feriados nacionais, recesso forense), monitoramento automático de movimentações via API do Escavador e alertas por e-mail.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Next.js 16** (App Router) — frontend + API
+- **PostgreSQL + Prisma** — banco de dados
+- **NextAuth (Auth.js) v5** — autenticação
+- **Escavador API** — monitoramento automático de processos (webhooks)
+- **Resend** — envio de e-mails de alerta
+- **Vercel Cron** — disparo diário da checagem de prazos
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Rodando localmente
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. `npm install`
+2. Configure um Postgres local e ajuste `DATABASE_URL` no `.env` (veja `.env` já criado como exemplo)
+3. `npx prisma migrate dev`
+4. Crie seu usuário: `ADMIN_EMAIL=voce@exemplo.com ADMIN_PASSWORD=sua-senha npm run db:seed`
+5. `npm run dev`
+6. Acesse http://localhost:3000 e faça login
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Testes
 
-## Learn More
+`npm test` — roda os testes da lógica de cálculo de prazo (`src/lib/prazos.test.ts`), incluindo casos de recesso forense e feriados nacionais.
 
-To learn more about Next.js, take a look at the following resources:
+## Limitações importantes (leia antes de usar em produção)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- O cálculo de prazo cobre **feriados nacionais + recesso forense nacional** (20/dez–20/jan). Feriados **estaduais/municipais** do tribunal específico (ex: aniversário da cidade-sede) não são conhecidos automaticamente. Cadastre-os na tabela `Feriado` para maior precisão.
+- Esta ferramenta é um **apoio**, não substitui a conferência profissional de prazos críticos.
+- O monitoramento automático via Escavador depende de uma conta e créditos pagos na API deles (https://api.escavador.com). Sem isso, os processos podem ser cadastrados e os prazos acompanhados manualmente.
+- A heurística que sinaliza "possível prazo" em uma movimentação (`src/lib/heuristica-prazo.ts`) é baseada em palavras-chave simples — sempre revise antes de confiar no prazo sugerido.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Veja `DEPLOY.md` para o passo a passo de colocar isso no ar para uso real.

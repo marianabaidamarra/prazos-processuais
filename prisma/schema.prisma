@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Usuário do sistema. MVP é single-user, mas o schema já suporta múltiplos.
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  processes     Process[]
+  notifyEmail   String? // e-mail para receber alertas, se diferente do login
+  notifyDaysBefore Int[] @default([7, 3, 1, 0]) // dias antes do prazo para notificar
+}
+
+// Um processo judicial acompanhado.
+model Process {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  numeroCnj         String   // número único CNJ, ex: 0000000-00.0000.0.00.0000
+  tribunal          String?
+  vara              String?
+  partes            String?  // resumo das partes (autor x réu)
+  status            String   @default("ativo") // ativo | arquivado | encerrado
+
+  escavadorProcessoId String? @unique // id do processo no Escavador, quando monitorado
+  monitoradoDesde      DateTime?
+  fonteMonitoramento    String  @default("manual") // manual | escavador | datajud
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  movimentacoes     Movimentacao[]
+  prazos            Prazo[]
+
+  @@unique([userId, numeroCnj])
+  @@index([userId, status])
+}
+
+// Movimentação/publicação bruta recebida (via webhook do Escavador ou lançada manualmente).
+model Movimentacao {
+  id            String   @id @default(cuid())
+  processId     String
+  process       Process  @relation(fields: [processId], references: [id], onDelete: Cascade)
+
+  data          DateTime
+  tipo          String?  // ex: "intimacao", "publicacao", "decisao", "sentenca"
+  conteudo      String   @db.Text
+  fonte         String   @default("manual") // manual | escavador_webhook | datajud
+  escavadorEventoId String? @unique
+  raw           Json?    // payload bruto recebido, para auditoria
+
+  prazoSugeridoDetectado Boolean @default(false) // heurística identificou possível prazo
+
+  createdAt     DateTime @default(now())
+
+  prazoGerado   Prazo?
+
+  @@index([processId, data])
+}
+
+// Um prazo processual calculado e acompanhado.
+model Prazo {
+  id                String   @id @default(cuid())
+  processId         String
+  process           Process  @relation(fields: [processId], references: [id], onDelete: Cascade)
+
+  movimentacaoId    String?  @unique
+  movimentacao      Movimentacao? @relation(fields: [movimentacaoId], references: [id])
+
+  tipo              String   // ex: "contestacao", "recurso", "embargos", "manifestacao", "outro"
+  descricao         String?
+
+  dataIntimacao     DateTime // data que dispara a contagem
+  diasPrazo         Int      // quantidade de dias do prazo (ex: 15)
+  contagemEmDiasUteis Boolean @default(true) // CPC art. 219 (processos eletrônicos: dias úteis)
+  dataFinal         DateTime // calculada automaticamente
+
+  status            String   @default("pendente") // pendente | cumprido | perdido | cancelado
+  cumpridoEm        DateTime?
+  observacoes       String?  @db.Text
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  notificacoes      Notificacao[]
+
+  @@index([processId, status])
+  @@index([dataFinal, status])
+}
+
+// Log de notificações enviadas para um prazo.
+model Notificacao {
+  id          String   @id @default(cuid())
+  prazoId     String
+  prazo       Prazo    @relation(fields: [prazoId], references: [id], onDelete: Cascade)
+
+  canal       String   @default("email") // email | whatsapp (futuro)
+  diasAntes   Int      // 7, 3, 1, 0...
+  enviadaEm   DateTime @default(now())
+  destinatario String
+  sucesso     Boolean  @default(true)
+  erro        String?
+
+  @@unique([prazoId, diasAntes, canal])
+}
+
+// Feriados nacionais e forenses usados no cálculo de prazos (permite customização por tribunal/ano).
+model Feriado {
+  id        String   @id @default(cuid())
+  data      DateTime @unique
+  descricao String
+  abrangencia String @default("nacional") // nacional | forense | estadual:SP etc.
+}
