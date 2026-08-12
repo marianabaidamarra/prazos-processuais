@@ -1,0 +1,956 @@
+[
+  {
+    "codigo": "22",
+    "nome": "Baixa Definitiva",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "26",
+    "nome": "Distribuição",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "36",
+    "nome": "Redistribuição",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "51",
+    "nome": "Conclusão",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "60",
+    "nome": "Expedição de documento",
+    "categoria_prazo": "preparatorio",
+    "observacao": "Expedição de documento — genérico, pode preceder comunicação formal."
+  },
+  {
+    "codigo": "85",
+    "nome": "Petição",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "92",
+    "nome": "Publicação",
+    "categoria_prazo": "gatilho_provavel",
+    "observacao": "Publicação — gatilho clássico de intimação/prazo (processo físico e eletrônico)."
+  },
+  {
+    "codigo": "106",
+    "nome": "Mandado",
+    "categoria_prazo": "preparatorio",
+    "observacao": "Mandado — expedição de mandado; antecede citação/intimação por oficial de justiça, não é o marco inicial em si."
+  },
+  {
+    "codigo": "118",
+    "nome": "Protocolo de Petição",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "123",
+    "nome": "Remessa",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "132",
+    "nome": "Recebimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "135",
+    "nome": "Apensamento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "196",
+    "nome": "Extinção da execução ou do cumprimento da sentença",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "198",
+    "nome": "Acolhimento de Embargos de Declaração",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "200",
+    "nome": "Não-Acolhimento de Embargos de Declaração",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "218",
+    "nome": "Sem Resolução de Mérito",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "219",
+    "nome": "Procedência",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "220",
+    "nome": "Improcedência",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "221",
+    "nome": "Procedência em Parte",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "230",
+    "nome": "Recurso prejudicado",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "235",
+    "nome": "Não Conhecimento de recurso",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "236",
+    "nome": "Negação de Seguimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "237",
+    "nome": "Provimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "239",
+    "nome": "Não-Provimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "242",
+    "nome": "Conhecimento em Parte e Não-Provimento ou Denegação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "245",
+    "nome": "Provisório",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "246",
+    "nome": "Definitivo",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "263",
+    "nome": "Réu revel citado por edital",
+    "categoria_prazo": "citacao_especifica",
+    "observacao": "Réu revel citado por edital — citação específica, caso raro."
+  },
+  {
+    "codigo": "265",
+    "nome": "Recurso Extraordinário com repercussão geral",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "272",
+    "nome": "A depender do julgamento de outra causa, de outro juízo ou declaração incidente",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "276",
+    "nome": "Execução frustrada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "313",
+    "nome": "Sessão do Tribunal do Júri",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "332",
+    "nome": "Antecipação de tutela",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "334",
+    "nome": "Gratuidade da Justiça",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "339",
+    "nome": "Liminar",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "347",
+    "nome": "Antecipação de Tutela",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "371",
+    "nome": "Incompetência",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "391",
+    "nome": "Denúncia",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "394",
+    "nome": "Com efeito suspensivo",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "417",
+    "nome": "Inclusão em pauta",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "432",
+    "nome": "Recurso Extraordinário",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "454",
+    "nome": "Indeferimento da petição inicial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "458",
+    "nome": "Abandono da causa",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "459",
+    "nome": "Ausência de pressupostos processuais",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "461",
+    "nome": "Ausência das condições da ação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "463",
+    "nome": "Desistência",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "466",
+    "nome": "Homologação de Transação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "471",
+    "nome": "Pronúncia de Decadência ou Prescrição",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "472",
+    "nome": "Sumaríssimo (art. 852-B, § 1º/CLT)",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "473",
+    "nome": "Ausência do Reclamante",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "493",
+    "nome": "Entrega em carga/vista",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "581",
+    "nome": "Documento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "785",
+    "nome": "Antecipação de tutela",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "787",
+    "nome": "Gratuidade da Justiça",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "792",
+    "nome": "Liminar",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "818",
+    "nome": "Liberdade provisória",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "848",
+    "nome": "Trânsito em julgado",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "849",
+    "nome": "Reativação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "870",
+    "nome": "Autos Eliminados",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "871",
+    "nome": "Acolhimento em parte de Embargos de Declaração",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "892",
+    "nome": "Liminar",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "893",
+    "nome": "Desarquivamento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "898",
+    "nome": "Por decisão judicial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "941",
+    "nome": "Incompetência",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "968",
+    "nome": "Não-Concessão",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "970",
+    "nome": "Audiência",
+    "categoria_prazo": "possivel_gatilho_secundario",
+    "observacao": "Audiência — pode gerar prazos subsequentes (ex: razões finais, recursos) dependendo do rito."
+  },
+  {
+    "codigo": "972",
+    "nome": "Provimento (art. 557 do CPC)",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "977",
+    "nome": "Recebimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "979",
+    "nome": "Recebimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "980",
+    "nome": "Remessa",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "981",
+    "nome": "Recebimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "982",
+    "nome": "Remessa",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "985",
+    "nome": "Mandado",
+    "categoria_prazo": "preparatorio",
+    "observacao": "Mandado — variante de código de outro grau/sistema, mesmo sentido de 106."
+  },
+  {
+    "codigo": "1013",
+    "nome": "Determinação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "1042",
+    "nome": "Morte do agente",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "1051",
+    "nome": "Decurso de Prazo",
+    "categoria_prazo": "resultado_auditoria",
+    "observacao": "Decurso de Prazo — é resultado (prazo já correu), não gatilho. Útil como conferência cruzada: se aparece sem prazo cadastrado, é sinal de furo no sistema."
+  },
+  {
+    "codigo": "1059",
+    "nome": "Sem efeito suspensivo",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "1061",
+    "nome": "Disponibilização no Diário da Justiça Eletrônico",
+    "categoria_prazo": "gatilho_provavel",
+    "observacao": "Disponibilização no Diário da Justiça Eletrônico — gatilho central em processo eletrônico; prazo conta do 1º dia útil seguinte (Lei 11.419/2006 art. 4º §3º)."
+  },
+  {
+    "codigo": "1063",
+    "nome": "Determinação de arquivamento de procedimentos investigatórios",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "10953",
+    "nome": "Pronúncia",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "10966",
+    "nome": "Mudança de Classe Processual",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11010",
+    "nome": "Mero expediente",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11014",
+    "nome": "Convenção das Partes para Cumprimento Voluntário da obrigação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11018",
+    "nome": "Recebimento de Embargos à Execução",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11022",
+    "nome": "Julgamento em Diligência",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11381",
+    "nome": "Ausência de citação de sucessores do réu falecido",
+    "categoria_prazo": "citacao_especifica",
+    "observacao": "Ausência de citação de sucessores do réu falecido — citação específica, caso raro."
+  },
+  {
+    "codigo": "11383",
+    "nome": "Ato ordinatório",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11384",
+    "nome": "Liquidação iniciada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11385",
+    "nome": "Execução/Cumprimento de Sentença Iniciada (o)",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11878",
+    "nome": "Prescrição",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "11983",
+    "nome": "Retificação de movimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12065",
+    "nome": "Cumprimento de Suspensão ou Sobrestamento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12066",
+    "nome": "Cumprimento de Levantamento da Suspensão",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12068",
+    "nome": "Levantamento da Suspensão ou Dessobrestamento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12104",
+    "nome": "Inclusão em pauta",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12116",
+    "nome": "Para julgamento de mérito",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12142",
+    "nome": "Mudança de Parte",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12143",
+    "nome": "Mudança de Assunto Processual",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12146",
+    "nome": "Liberdade Provisória",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12164",
+    "nome": "Outras Decisões",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12167",
+    "nome": "Enviada ao Tribunal",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12174",
+    "nome": "Enviada ao Tribunal",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12175",
+    "nome": "Preparada para Envio",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12185",
+    "nome": "Decisão Interlocutória de Mérito",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12187",
+    "nome": "Homologação de Decisão de Juiz Leigo",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12215",
+    "nome": "Processo devolvido à Secretaria",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12255",
+    "nome": "Redistribuição por prevenção",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12259",
+    "nome": "Prescrição intercorrente (art. 921, § 4º, CPC)",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12264",
+    "nome": "Eletrônica",
+    "categoria_prazo": "gatilho_possivel",
+    "observacao": "Eletrônica — provável complemento/subtipo de 12281."
+  },
+  {
+    "codigo": "12265",
+    "nome": "Expedida/certificada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12266",
+    "nome": "Confirmada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12268",
+    "nome": "Em Secretaria",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12281",
+    "nome": "Comunicação eletrônica",
+    "categoria_prazo": "gatilho_possivel",
+    "observacao": "Comunicação eletrônica — possível canal de Domicílio Judicial Eletrônico; regra de contagem pode diferir (verificar com mais casos)."
+  },
+  {
+    "codigo": "12282",
+    "nome": "Expedida/Certificada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12283",
+    "nome": "Confirmada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12287",
+    "nome": "Expedida/Certificada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12288",
+    "nome": "Confirmada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12291",
+    "nome": "Movimentação processual",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12298",
+    "nome": "Cancelamento de Dívida Ativa",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12309",
+    "nome": "Retirada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12318",
+    "nome": "Reconhecimento de prevenção",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12387",
+    "nome": "Decisão de Saneamento e Organização",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12434",
+    "nome": "Conhecimento para dar provimento ao Recurso Especial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12435",
+    "nome": "Conhecimento para negar provimento ao recurso especial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12436",
+    "nome": "Conhecimento para não conhecer do Recurso Especial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12440",
+    "nome": "conhecimento para conhecer em parte o recurso especial e negar provimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12444",
+    "nome": "deferimento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12445",
+    "nome": "Recurso Ordinário",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12457",
+    "nome": "Expedição de precatório/rpv",
+    "categoria_prazo": "preparatorio",
+    "observacao": "Expedição de precatório/rpv — específico de execução."
+  },
+  {
+    "codigo": "12459",
+    "nome": "Prejudicado",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12474",
+    "nome": "Distribuição",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12531",
+    "nome": "Frutífera",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12532",
+    "nome": "Infrutífera",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12614",
+    "nome": "Remessa para o CEJUSC ou Centros de Conciliação/Mediação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12619",
+    "nome": "Recebimento do CEJUSC ou Centros de Conciliação/Mediação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12621",
+    "nome": "Recebimento no CEJUSC ou Centros de Conciliação/Mediação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12648",
+    "nome": "Determinação de Diligência",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12740",
+    "nome": "de Conciliação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12742",
+    "nome": "de Custódia",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12743",
+    "nome": "de Interrogatório",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12744",
+    "nome": "de Justificação",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12747",
+    "nome": "Inicial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12749",
+    "nome": "de Instrução",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12750",
+    "nome": "de Instrução e Julgamento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "12751",
+    "nome": "de Julgamento",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14093",
+    "nome": "Voto do Relator",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14099",
+    "nome": "Homologação de Acordo em Execução ou em Cumprimento de Sentença",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14732",
+    "nome": "Conversão de Autos Físicos em Eletrônicos",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14736",
+    "nome": "Inclusão no Juízo 100% Digital",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14737",
+    "nome": "Exclusão do Juízo 100% Digital",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14738",
+    "nome": "Retificação de Classe Processual",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14739",
+    "nome": "Evolução da Classe Processual",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14904",
+    "nome": "Agendada",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "14961",
+    "nome": "Erro ou Recusa na Comunicação",
+    "categoria_prazo": "sinal_negativo",
+    "observacao": "Erro ou Recusa na Comunicação — comunicação FALHOU; não deve disparar contagem de prazo. Importante para evitar falso positivo."
+  },
+  {
+    "codigo": "14999",
+    "nome": "Iniciada Tramitação Direta entre MP e Autoridade Policial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "15085",
+    "nome": "Emenda à Inicial",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "15101",
+    "nome": "Conclusão",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "15164",
+    "nome": "Não Acolhimento de Embargos de Declaração",
+    "categoria_prazo": "",
+    "observacao": ""
+  },
+  {
+    "codigo": "15185",
+    "nome": "Cooperação Judiciária",
+    "categoria_prazo": "",
+    "observacao": ""
+  }
+]
