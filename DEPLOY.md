@@ -13,7 +13,19 @@ Você optou por ficar no plano gratuito em tudo por enquanto (Vercel Hobby, Supa
 ## 1. Banco de dados — Supabase
 
 1. Crie uma conta grátis em https://supabase.com e um novo projeto.
-2. Em **Project Settings → Database**, copie a "Connection string" (modo "Transaction" / pooled, porta 6543) — essa será sua `DATABASE_URL`.
+2. Em **Project Settings → Database**, copie DUAS connection strings (isso é importante — usar só
+   uma das duas trava o deploy, foi um bug real que já aconteceu neste projeto):
+   - Modo **"Transaction"** (porta 6543) → variável `DATABASE_URL`. Usada em runtime pela
+     aplicação (é rápida e aguenta muitas conexões simultâneas, mas roda em cima do PgBouncer).
+   - Modo **"Session"** (porta 5432, mesmo host do pooler) → variável `DIRECT_URL`. Usada só pelo
+     `prisma migrate deploy` no momento do build.
+3. Por quê as duas: o `prisma migrate deploy` precisa de locks de sessão (advisory locks) que o
+   PgBouncer em modo "Transaction" (porta 6543) não suporta. Se `DIRECT_URL` não estiver
+   configurada, o `schema.prisma` cai para usar a mesma `DATABASE_URL` pooled também na migração —
+   e o build fica **travado "Building..." por tempo indefinido**, sem erro claro, até estourar o
+   timeout do Vercel. Isso já aconteceu neste projeto e consumiu ~9 minutos de build antes de ser
+   diagnosticado. `prisma/schema.prisma` já está configurado para usar `directUrl = env("DIRECT_URL")`
+   além de `url = env("DATABASE_URL")` — só falta garantir as duas variáveis no Vercel.
 
 ## 2. Monitoramento automático de processos — ADIADO (decisão de 11/08)
 
@@ -48,7 +60,8 @@ seriam:
 1. Suba este projeto para um repositório no GitHub (posso te ajudar com isso).
 2. Crie uma conta em https://vercel.com, importe o repositório.
 3. Em **Settings → Environment Variables**, configure (o Escavador fica de fora por enquanto — veja seção 2):
-   - `DATABASE_URL` (do Supabase)
+   - `DATABASE_URL` (do Supabase, connection string modo "Transaction", porta 6543)
+   - `DIRECT_URL` (do Supabase, connection string modo "Session", porta 5432 — necessária para o `prisma migrate deploy` não travar o build, ver seção 1)
    - `AUTH_SECRET` (gere um valor aleatório forte, ex: `openssl rand -base64 32`)
    - `NEXTAUTH_URL` (a URL final do seu deploy, ex: `https://prazos.vercel.app`)
    - `RESEND_API_KEY`
