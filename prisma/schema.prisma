@@ -39,6 +39,8 @@ model Process {
   escavadorProcessoId String? @unique // id do processo no Escavador, quando monitorado
   monitoradoDesde      DateTime?
   fonteMonitoramento    String  @default("manual") // manual | escavador | datajud
+  ultimaVerificacaoDatajud DateTime? // última consulta ao DataJud (mostrado na UI — a API tem
+                                      // defasagem de T+1 a T+7 dias, isso precisa ficar visível)
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -61,6 +63,8 @@ model Movimentacao {
   conteudo      String   @db.Text
   fonte         String   @default("manual") // manual | escavador_webhook | datajud
   escavadorEventoId String? @unique
+  codigoMovimento String? // código do movimento na Tabela Processual Unificada (TPU), quando
+                          // fonte = datajud — usado para dedup e para lookup em tpu-codigos.ts
   raw           Json?    // payload bruto recebido, para auditoria
 
   prazoSugeridoDetectado Boolean @default(false) // heurística identificou possível prazo

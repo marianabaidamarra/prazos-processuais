@@ -25,7 +25,12 @@ interface ProcessoSerializado {
   partes: string | null;
   status: string;
   fonteMonitoramento: string;
+  ultimaVerificacaoDatajud: string | null;
   prazos: PrazoSerializado[];
+}
+
+function formatarDataHora(iso: string): string {
+  return new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }
 
 const URGENCIA_ESTILO: Record<UrgenciaPrazo, { label: string; classe: string }> = {
@@ -94,6 +99,7 @@ export function DashboardClient({
         vara: formData.get("vara") || undefined,
         partes: formData.get("partes") || undefined,
         monitorarViaEscavador: formData.get("monitorar") === "on",
+        monitorarViaDatajud: formData.get("monitorarDatajud") === "on",
       }),
     });
     const dados = await resp.json();
@@ -138,6 +144,17 @@ export function DashboardClient({
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
+    });
+    setCarregando(false);
+    router.refresh();
+  }
+
+  async function alternarMonitoramentoDatajud(processId: string, ligar: boolean) {
+    setCarregando(true);
+    await fetch(`/api/processos/${processId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fonteMonitoramento: ligar ? "datajud" : "manual" }),
     });
     setCarregando(false);
     router.refresh();
@@ -270,10 +287,27 @@ export function DashboardClient({
                 <label className="mb-1 block text-xs font-medium text-zinc-700">Partes</label>
                 <input name="partes" className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-sm" />
               </div>
-              {/* Monitoramento automático (Escavador/outro provedor) desativado por ora —
+              {/* Monitoramento via Escavador (e outros provedores pagos) desativado por ora —
                   nenhum provedor pesquisado ficou dentro do orçamento/self-service sem
                   mudança de arquitetura. O campo "monitorarViaEscavador" na API continua
                   existindo e funcional; é só reativar este bloco quando decidir um provedor. */}
+              <div className="sm:col-span-2 flex items-start gap-2 rounded-md border border-zinc-200 bg-zinc-50 p-3">
+                <input
+                  type="checkbox"
+                  name="monitorarDatajud"
+                  id="monitorar-datajud"
+                  className="mt-0.5 h-4 w-4"
+                />
+                <label htmlFor="monitorar-datajud" className="text-sm text-zinc-700">
+                  <span className="font-medium">Monitorar automaticamente via DataJud (CNJ, gratuito)</span>
+                  <br />
+                  <span className="text-xs text-zinc-500">
+                    Consulta diária às movimentações públicas do processo. A defasagem dos dados varia por
+                    tribunal (normalmente de 1 a 7 dias) — não é tempo real, e não substitui a conferência
+                    manual de prazos críticos.
+                  </span>
+                </label>
+              </div>
               <div className="sm:col-span-2">
                 <button
                   type="submit"
@@ -300,16 +334,40 @@ export function DashboardClient({
                           monitorado via Escavador
                         </span>
                       )}
+                      {processo.fonteMonitoramento === "datajud" && (
+                        <span
+                          title="A API do DataJud tem defasagem de 1 a 7 dias dependendo do tribunal — não é monitoramento em tempo real."
+                          className="ml-2 rounded-full bg-purple-100 px-2 py-0.5 text-purple-700"
+                        >
+                          DataJud · última verificação:{" "}
+                          {processo.ultimaVerificacaoDatajud
+                            ? formatarDataHora(processo.ultimaVerificacaoDatajud)
+                            : "ainda não verificado"}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <button
-                    onClick={() =>
-                      setProcessoParaPrazo(processoParaPrazo === processo.id ? null : processo.id)
-                    }
-                    className="text-xs font-medium text-zinc-700 hover:underline"
-                  >
-                    {processoParaPrazo === processo.id ? "Cancelar" : "+ Adicionar prazo"}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      disabled={carregando}
+                      onClick={() =>
+                        alternarMonitoramentoDatajud(processo.id, processo.fonteMonitoramento !== "datajud")
+                      }
+                      className="text-xs font-medium text-zinc-500 hover:underline"
+                    >
+                      {processo.fonteMonitoramento === "datajud"
+                        ? "Desligar monitoramento DataJud"
+                        : "Ligar monitoramento DataJud"}
+                    </button>
+                    <button
+                      onClick={() =>
+                        setProcessoParaPrazo(processoParaPrazo === processo.id ? null : processo.id)
+                      }
+                      className="text-xs font-medium text-zinc-700 hover:underline"
+                    >
+                      {processoParaPrazo === processo.id ? "Cancelar" : "+ Adicionar prazo"}
+                    </button>
+                  </div>
                 </div>
 
                 {processoParaPrazo === processo.id && (

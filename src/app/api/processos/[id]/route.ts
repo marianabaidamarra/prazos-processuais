@@ -35,6 +35,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (typeof body[campo] === "string") dataPermitida[campo] = body[campo];
   }
 
+  // Liga/desliga o monitoramento automático via DataJud num processo já cadastrado (não passa
+  // pelo cadastro inicial via POST, que também aceita isso). Só aceita "manual" ou "datajud"
+  // aqui — "escavador" tem fluxo próprio de registro/cancelamento (ver POST e DELETE acima).
+  if (body.fonteMonitoramento === "datajud" && processo.fonteMonitoramento !== "datajud") {
+    dataPermitida.fonteMonitoramento = "datajud";
+    dataPermitida.monitoradoDesde = new Date();
+  } else if (body.fonteMonitoramento === "manual" && processo.fonteMonitoramento === "datajud") {
+    dataPermitida.fonteMonitoramento = "manual";
+  }
+
   const atualizado = await prisma.process.update({ where: { id }, data: dataPermitida });
   return NextResponse.json({ processo: atualizado });
 }

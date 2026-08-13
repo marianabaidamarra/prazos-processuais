@@ -10,6 +10,7 @@ const criarProcessoSchema = z.object({
   vara: z.string().optional(),
   partes: z.string().optional(),
   monitorarViaEscavador: z.boolean().optional().default(false),
+  monitorarViaDatajud: z.boolean().optional().default(false),
 });
 
 export async function GET() {
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ erro: parsed.error.flatten() }, { status: 400 });
   }
-  const { numeroCnj, tribunal, vara, partes, monitorarViaEscavador } = parsed.data;
+  const { numeroCnj, tribunal, vara, partes, monitorarViaEscavador, monitorarViaDatajud } = parsed.data;
 
   const existente = await prisma.process.findUnique({
     where: { userId_numeroCnj: { userId, numeroCnj } },
@@ -77,6 +78,12 @@ export async function POST(req: NextRequest) {
           ? `Monitoramento automático indisponível: ${e.message}`
           : "Monitoramento automático indisponível.";
     }
+  } else if (monitorarViaDatajud) {
+    // Diferente do Escavador, o DataJud não tem um passo de "registro" — é consulta pull,
+    // feita pelo cron diário (ver src/app/api/cron/monitoramento-datajud/route.ts). Aqui só
+    // marcamos a fonte; a primeira consulta real acontece na próxima execução do cron.
+    fonteMonitoramento = "datajud";
+    monitoradoDesde = new Date();
   }
 
   const processo = await prisma.process.create({

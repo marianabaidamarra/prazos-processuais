@@ -20,6 +20,7 @@ export default async function DashboardPage() {
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
     monitoradoDesde: p.monitoradoDesde?.toISOString() ?? null,
+    ultimaVerificacaoDatajud: p.ultimaVerificacaoDatajud?.toISOString() ?? null,
     prazos: p.prazos.map((pr) => ({
       ...pr,
       dataIntimacao: pr.dataIntimacao.toISOString(),
