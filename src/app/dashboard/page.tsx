@@ -14,6 +14,20 @@ export default async function DashboardPage() {
     },
   });
 
+  // Movimentações que a heurística (regex ou código TPU, ver src/lib/heuristica-prazo.ts)
+  // sinalizou como possível gatilho de prazo, e que ainda não viraram um Prazo de fato
+  // (prazoGerado null) — é o que a advogada precisa revisar e decidir se cadastra o prazo.
+  // Sem isso na UI, o monitoramento roda mas ninguém vê o resultado.
+  const movimentacoesDetectadas = await prisma.movimentacao.findMany({
+    where: {
+      prazoSugeridoDetectado: true,
+      prazoGerado: null,
+      process: { userId },
+    },
+    include: { process: true },
+    orderBy: { data: "desc" },
+  });
+
   // Serializa datas para string (Server -> Client Component boundary)
   const processosSerializados = processos.map((p) => ({
     ...p,
@@ -31,10 +45,22 @@ export default async function DashboardPage() {
     })),
   }));
 
+  const movimentacoesDetectadasSerializadas = movimentacoesDetectadas.map((m) => ({
+    id: m.id,
+    processId: m.processId,
+    numeroCnj: m.process.numeroCnj,
+    data: m.data.toISOString(),
+    tipo: m.tipo,
+    conteudo: m.conteudo,
+    fonte: m.fonte,
+    codigoMovimento: m.codigoMovimento,
+  }));
+
   return (
     <DashboardClient
       userEmail={session!.user!.email ?? ""}
       processosIniciais={processosSerializados}
+      movimentacoesDetectadasIniciais={movimentacoesDetectadasSerializadas}
     />
   );
 }

@@ -73,6 +73,13 @@ model Movimentacao {
 
   prazoGerado   Prazo?
 
+  // Garante o dedup de movimentações vindas do DataJud no nível do banco, não só por um
+  // findFirst antes do create na aplicação (que deixava uma janela de corrida — ex: duas
+  // execuções do cron sobrepostas inserindo a mesma movimentação duas vezes). codigoMovimento e
+  // fonte são NULL/"manual" para lançamentos manuais, e Postgres trata NULL como distinto de
+  // NULL em constraints únicas — então isso não afeta movimentações manuais, só as de fonte
+  // "datajud" (única fonte que preenche codigoMovimento).
+  @@unique([processId, fonte, codigoMovimento, data])
   @@index([processId, data])
 }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calcularDataFinalPrazo, classificarUrgencia } from "./prazos";
+import { calcularDataFinalPrazo, classificarUrgencia, hojeEmSaoPaulo } from "./prazos";
 
 function d(iso: string): Date {
   return new Date(iso + "T00:00:00.000Z");
@@ -43,14 +43,18 @@ describe("calcularDataFinalPrazo", () => {
   });
 
   it("suspende contagem durante o recesso forense (20/dez a 20/jan)", () => {
-    // intimação em 2026-12-15 (terça), 10 dias úteis -> deve pular todo o recesso
+    // intimação em 2026-12-15 (terça), 10 dias úteis -> deve pular todo o recesso.
+    // Data exata calculada manualmente: contam-se 3 dias úteis antes do recesso começar em 20/12
+    // (16, 17, 18/dez — qua/qui/sex; 19/dez é sábado). Faltam 7 dias úteis, que só voltam a contar
+    // em 21/jan/2027 (quinta, primeiro dia útil após o recesso 20/dez-20/jan): 21, 22/jan (2),
+    // pula o fim de semana 23-24/jan, depois 25, 26, 27, 28, 29/jan (mais 5) = 7 dias úteis,
+    // completando os 10 em 29/jan/2027 (sexta).
     const resultado = calcularDataFinalPrazo({
       dataIntimacao: d("2026-12-15"),
       diasPrazo: 10,
       contagemEmDiasUteis: true,
     });
-    // resultado deve cair depois de 21/jan/2027 (fim do recesso, considerando 20/jan ainda suspenso)
-    expect(resultado.getTime()).toBeGreaterThan(d("2027-01-20").getTime());
+    expect(fmt(resultado)).toBe("2027-01-29");
   });
 
   it("considera intimação feita no recesso como feita no primeiro dia útil seguinte", () => {
@@ -94,5 +98,31 @@ describe("classificarUrgencia", () => {
   });
   it("classifica prazo tranquilo (>7 dias)", () => {
     expect(classificarUrgencia(d("2026-08-25"), d("2026-08-10"))).toBe("tranquilo");
+  });
+});
+
+describe("hojeEmSaoPaulo", () => {
+  it("usa o dia civil de Brasília, não o de UTC, quando já é o dia seguinte em UTC", () => {
+    // 2026-08-10 22h em Brasília (UTC-3) = 2026-08-11 01h UTC — o bug antigo (normalizarData(new
+    // Date()), que lê getUTCFullYear/Month/Date) leria isso como já sendo dia 11.
+    const agora = new Date("2026-08-11T01:00:00.000Z");
+    expect(fmt(hojeEmSaoPaulo(agora))).toBe("2026-08-10");
+  });
+
+  it("bate com o dia civil de UTC quando os fusos ainda coincidem (manhã em Brasília)", () => {
+    // 2026-08-10 10h em Brasília = 2026-08-10 13h UTC — mesmo dia nos dois fusos.
+    const agora = new Date("2026-08-10T13:00:00.000Z");
+    expect(fmt(hojeEmSaoPaulo(agora))).toBe("2026-08-10");
+  });
+});
+
+describe("classificarUrgencia — fronteira de fuso horário (regressão)", () => {
+  it("NÃO marca como vencido um prazo que vence hoje quando são 22h em Brasília", () => {
+    // Prazo vence em 2026-08-10. "Agora" = 2026-08-10 22h em Brasília = 2026-08-11 01h UTC.
+    // Com o bug antigo (dia civil em UTC), "hoje" seria lido como 2026-08-11 e o prazo
+    // apareceria como VENCIDO — mesmo faltando 2h para o fim do dia em Brasília.
+    const dataFinal = d("2026-08-10");
+    const hoje = hojeEmSaoPaulo(new Date("2026-08-11T01:00:00.000Z"));
+    expect(classificarUrgencia(dataFinal, hoje)).toBe("hoje");
   });
 });

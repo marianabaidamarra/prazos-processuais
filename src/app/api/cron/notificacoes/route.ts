@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { enviarAlertaPrazo } from "@/lib/email";
-import { normalizarData } from "@/lib/prazos";
+import { normalizarData, hojeEmSaoPaulo } from "@/lib/prazos";
+import { verificarCronSecret } from "@/lib/cron-auth";
 
 /**
  * Job diário (configurado via Vercel Cron, ver vercel.json) que verifica prazos
@@ -10,15 +11,13 @@ import { normalizarData } from "@/lib/prazos";
  * no header Authorization quando configurado nas variáveis de ambiente.
  */
 export async function GET(req: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ erro: "Não autorizado" }, { status: 401 });
-    }
-  }
+  const erroAuth = verificarCronSecret(req);
+  if (erroAuth) return erroAuth;
 
-  const hoje = normalizarData(new Date());
+  // Deriva "hoje" do dia civil em Brasília, não do dia civil em UTC (ver hojeEmSaoPaulo) —
+  // senão um prazo pode aparecer vencido/notificável horas antes da hora real, entre 21h e
+  // 23h59 de Brasília.
+  const hoje = hojeEmSaoPaulo();
 
   const prazosPendentes = await prisma.prazo.findMany({
     where: { status: "pendente" },
@@ -38,7 +37,32 @@ export async function GET(req: NextRequest) {
       ? usuario.notifyDaysBefore
       : [7, 3, 1, 0];
 
-    if (!diasParaNotificar.includes(diasRestantes)) {
+    // diasAntes é a chave usada para dedup de notificação (Notificacao.prazoId_diasAntes_canal).
+    // No caminho normal, é o próprio diasRestantes do dia (bate exatamente com um checkpoint
+    // configurado, ex: 7, 3, 1, 0).
+    let diasAntes = diasRestantes;
+    let precisaNotificar = diasParaNotificar.includes(diasRestantes);
+
+    // Recuperação de checkpoint perdido: se o cron não rodou (ou falhou) no dia exato em que
+    // diasRestantes chegou a 0, o prazo pula direto de "não bateu checkpoint" para
+    // diasRestantes negativo — que nunca mais bate com nenhum checkpoint configurado, e o prazo
+    // "escapa" da notificação para sempre. Para o checkpoint 0 especificamente, tratamos
+    // qualquer diasRestantes negativo sem notificação de "vencido" bem-sucedida ainda registrada
+    // como se fosse esse checkpoint — assim ele acaba sendo notificado no primeiro cron que
+    // rodar depois, ainda que atrasado.
+    if (!precisaNotificar && diasRestantes < 0 && diasParaNotificar.includes(0)) {
+      const jaNotificouVencido = await prisma.notificacao.findUnique({
+        where: {
+          prazoId_diasAntes_canal: { prazoId: prazo.id, diasAntes: 0, canal: "email" },
+        },
+      });
+      if (!jaNotificouVencido?.sucesso) {
+        precisaNotificar = true;
+        diasAntes = 0;
+      }
+    }
+
+    if (!precisaNotificar) {
       pulados++;
       continue;
     }
@@ -52,7 +76,7 @@ export async function GET(req: NextRequest) {
       where: {
         prazoId_diasAntes_canal: {
           prazoId: prazo.id,
-          diasAntes: diasRestantes,
+          diasAntes,
           canal: "email",
         },
       },
@@ -68,6 +92,9 @@ export async function GET(req: NextRequest) {
       prazoTipo: prazo.tipo,
       prazoDescricao: prazo.descricao,
       dataFinal: prazo.dataFinal,
+      // Usa o diasRestantes REAL (pode ser negativo) no conteúdo do e-mail, mesmo quando
+      // diasAntes (chave de dedup) foi normalizado para 0 — assim quem recebe o alerta vê
+      // "venceu há N dias" de fato, não "vence hoje" para um prazo já vencido há tempo.
       diasRestantes,
     });
 
@@ -75,7 +102,7 @@ export async function GET(req: NextRequest) {
       where: {
         prazoId_diasAntes_canal: {
           prazoId: prazo.id,
-          diasAntes: diasRestantes,
+          diasAntes,
           canal: "email",
         },
       },
@@ -87,7 +114,7 @@ export async function GET(req: NextRequest) {
       },
       create: {
         prazoId: prazo.id,
-        diasAntes: diasRestantes,
+        diasAntes,
         destinatario,
         sucesso: resultado.ok,
         erro: resultado.erro,

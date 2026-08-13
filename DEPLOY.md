@@ -56,7 +56,11 @@ Como funciona:
 - `src/app/api/cron/monitoramento-datajud/route.ts` — cron diário (`vercel.json`, 9h de Brasília,
   2h antes do cron de notificações às 11h — dá tempo de os movimentos novos serem gravados antes da
   avaliação de prazos) que consulta cada processo com `fonteMonitoramento: "datajud"` e grava
-  movimentações novas.
+  movimentações novas. IMPORTANTE: o campo `schedule` do Vercel Cron é sempre em UTC, nunca no
+  fuso do usuário — como o Brasil não observa horário de verão desde 2019 (Brasília = UTC-3 o ano
+  todo), 9h/11h de Brasília correspondem a `"0 12 * * *"`/`"0 14 * * *"` em `vercel.json`, não
+  `"0 9 * * *"`/`"0 11 * * *"` (que seriam 6h/8h de Brasília). Ambos os crons rodam 1x/dia, dentro
+  do limite do plano Hobby da Vercel (cron não pode rodar mais de uma vez ao dia nesse plano).
 - `src/lib/heuristica-prazo.ts` — a função `detectarPossivelPrazoPorCodigoTpu` classifica os
   movimentos do DataJud pelo código oficial da Tabela Processual Unificada (mais confiável que a
   heurística de regex usada para outras fontes, que continua ativa sem alterações).

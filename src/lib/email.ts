@@ -50,11 +50,13 @@ export async function enviarAlertaPrazo(dados: AlertaPrazoEmail): Promise<{ ok: 
   const from = process.env.NOTIFICATIONS_FROM_EMAIL ?? "alertas@example.com";
 
   const urgenciaTexto =
-    dados.diasRestantes <= 0
-      ? "VENCE HOJE"
-      : dados.diasRestantes === 1
-        ? "vence amanhã"
-        : `vence em ${dados.diasRestantes} dias`;
+    dados.diasRestantes < 0
+      ? `VENCEU há ${Math.abs(dados.diasRestantes)} dia${Math.abs(dados.diasRestantes) === 1 ? "" : "s"}`
+      : dados.diasRestantes === 0
+        ? "VENCE HOJE"
+        : dados.diasRestantes === 1
+          ? "vence amanhã"
+          : `vence em ${dados.diasRestantes} dias`;
 
   const dataFormatada = dados.dataFinal.toLocaleDateString("pt-BR", { timeZone: "UTC" });
 

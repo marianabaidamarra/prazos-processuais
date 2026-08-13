@@ -29,6 +29,17 @@ interface ProcessoSerializado {
   prazos: PrazoSerializado[];
 }
 
+interface MovimentacaoDetectadaSerializada {
+  id: string;
+  processId: string;
+  numeroCnj: string;
+  data: string;
+  tipo: string | null;
+  conteudo: string;
+  fonte: string;
+  codigoMovimento: string | null;
+}
+
 function formatarDataHora(iso: string): string {
   return new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }
@@ -53,17 +64,37 @@ function formatarData(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
+/** Data (YYYY-MM-DD) no fuso de Brasília, para pré-preencher um <input type="date">. */
+function paraInputDate(iso: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(iso));
+}
+
+const FONTE_LABEL: Record<string, string> = {
+  datajud: "DataJud",
+  escavador_webhook: "Escavador",
+  manual: "Manual",
+};
+
 export function DashboardClient({
   userEmail,
   processosIniciais,
+  movimentacoesDetectadasIniciais,
 }: {
   userEmail: string;
   processosIniciais: ProcessoSerializado[];
+  movimentacoesDetectadasIniciais: MovimentacaoDetectadaSerializada[];
 }) {
   const router = useRouter();
   const [processos] = useState(processosIniciais);
+  const [movimentacoesDetectadas] = useState(movimentacoesDetectadasIniciais);
   const [mostrarFormProcesso, setMostrarFormProcesso] = useState(false);
   const [processoParaPrazo, setProcessoParaPrazo] = useState<string | null>(null);
+  const [movimentacaoParaPrazo, setMovimentacaoParaPrazo] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [mensagem, setMensagem] = useState<string | null>(null);
 
@@ -113,7 +144,7 @@ export function DashboardClient({
     router.refresh();
   }
 
-  async function criarPrazo(processId: string, formData: FormData) {
+  async function criarPrazo(processId: string, formData: FormData, movimentacaoId?: string) {
     setCarregando(true);
     setMensagem(null);
     const resp = await fetch("/api/prazos", {
@@ -126,6 +157,7 @@ export function DashboardClient({
         dataIntimacao: formData.get("dataIntimacao"),
         diasPrazo: Number(formData.get("diasPrazo")),
         contagemEmDiasUteis: formData.get("contagemEmDiasUteis") === "on",
+        movimentacaoId,
       }),
     });
     const dados = await resp.json();
@@ -135,6 +167,7 @@ export function DashboardClient({
       return;
     }
     setProcessoParaPrazo(null);
+    setMovimentacaoParaPrazo(null);
     router.refresh();
   }
 
@@ -190,6 +223,121 @@ export function DashboardClient({
             </div>
           ))}
         </section>
+
+        {movimentacoesDetectadas.length > 0 && (
+          <section className="mb-8">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-base font-semibold text-zinc-900">
+                Movimentações com possível prazo detectado
+                <span className="ml-2 rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+                  {movimentacoesDetectadas.length}
+                </span>
+              </h2>
+            </div>
+            <p className="mb-3 text-xs text-zinc-500">
+              O monitoramento automático (DataJud) ou o cadastro manual sinalizou estas movimentações como
+              possível gatilho de prazo. Isso é só uma sugestão — revise cada uma e crie o prazo manualmente
+              se for o caso. Depois de criado, a movimentação sai desta lista.
+            </p>
+            <div className="overflow-hidden rounded-lg border border-purple-200 bg-white">
+              {movimentacoesDetectadas.map((mov) => (
+                <div key={mov.id} className="border-t border-zinc-100 p-4 first:border-t-0">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <div className="font-mono text-sm text-zinc-900">{mov.numeroCnj}</div>
+                      <div className="text-xs text-zinc-500">
+                        {formatarDataHora(mov.data)} · {FONTE_LABEL[mov.fonte] ?? mov.fonte}
+                        {mov.codigoMovimento ? ` · código ${mov.codigoMovimento}` : ""}
+                      </div>
+                      <div className="mt-1 text-sm text-zinc-700">{mov.tipo ?? mov.conteudo}</div>
+                    </div>
+                    <button
+                      onClick={() =>
+                        setMovimentacaoParaPrazo(movimentacaoParaPrazo === mov.id ? null : mov.id)
+                      }
+                      className="text-xs font-medium text-zinc-700 hover:underline"
+                    >
+                      {movimentacaoParaPrazo === mov.id ? "Cancelar" : "+ Criar prazo a partir daqui"}
+                    </button>
+                  </div>
+
+                  {movimentacaoParaPrazo === mov.id && (
+                    <form
+                      action={(fd) => criarPrazo(mov.processId, fd, mov.id)}
+                      className="mt-3 grid grid-cols-1 gap-3 rounded-md border border-zinc-100 bg-zinc-50 p-3 sm:grid-cols-2"
+                    >
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-zinc-700">Tipo</label>
+                        <select
+                          name="tipo"
+                          className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-sm"
+                        >
+                          {TIPOS_PRAZO.map((t) => (
+                            <option key={t.value} value={t.value}>
+                              {t.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-zinc-700">Dias de prazo</label>
+                        <input
+                          type="number"
+                          name="diasPrazo"
+                          min={1}
+                          required
+                          className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-zinc-700">
+                          Data da intimação/publicação
+                        </label>
+                        <input
+                          type="date"
+                          name="dataIntimacao"
+                          required
+                          defaultValue={paraInputDate(mov.data)}
+                          className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-sm"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 pt-5">
+                        <input
+                          type="checkbox"
+                          name="contagemEmDiasUteis"
+                          id={`dias-uteis-mov-${mov.id}`}
+                          defaultChecked
+                          className="h-4 w-4"
+                        />
+                        <label htmlFor={`dias-uteis-mov-${mov.id}`} className="text-sm text-zinc-700">
+                          Contar em dias úteis (padrão CPC art. 219)
+                        </label>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="mb-1 block text-xs font-medium text-zinc-700">
+                          Descrição (opcional)
+                        </label>
+                        <input
+                          name="descricao"
+                          className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-sm"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <button
+                          type="submit"
+                          disabled={carregando}
+                          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60"
+                        >
+                          Calcular e salvar prazo
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="mb-8">
           <div className="mb-3 flex items-center justify-between">

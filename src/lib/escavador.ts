@@ -58,18 +58,20 @@ export async function cancelarMonitoramentoProcesso(escavadorProcessoId: string)
 }
 
 /**
- * Verifica a assinatura HMAC do webhook do Escavador, se configurada
- * (ESCAVADOR_WEBHOOK_SECRET). Sem isso, qualquer requisição poderia forjar
- * eventos — sempre configure o secret em produção.
+ * Verifica a assinatura HMAC do webhook do Escavador.
+ *
+ * Fail-closed: se ESCAVADOR_WEBHOOK_SECRET não estiver configurado, REJEITA a requisição em vez
+ * de aceitar sem verificação — sem isso, qualquer requisição externa poderia forjar eventos e
+ * gravar movimentações/prazos falsos. "Esqueceu de configurar o secret" não deve equivaler a
+ * "webhook público sem autenticação".
  */
 export function verificarAssinaturaWebhook(payloadBruto: string, assinaturaRecebida: string | null): boolean {
   const secret = process.env.ESCAVADOR_WEBHOOK_SECRET;
   if (!secret) {
-    // Sem secret configurado: aceita, mas registra aviso — só recomendado em desenvolvimento.
-    console.warn(
-      "ESCAVADOR_WEBHOOK_SECRET não configurado — aceitando webhook sem verificação de assinatura."
+    console.error(
+      "ESCAVADOR_WEBHOOK_SECRET não configurado — rejeitando webhook por segurança (fail-closed)."
     );
-    return true;
+    return false;
   }
   if (!assinaturaRecebida) return false;
 

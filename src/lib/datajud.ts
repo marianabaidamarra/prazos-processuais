@@ -90,6 +90,20 @@ export function resolverEndpointDatajud(numeroCnj: string): string {
     throw new Error(`Número CNJ inválido (esperado 20 dígitos): ${numeroCnj}`);
   }
 
+  // Segmento "1" (STF) foi checado explicitamente contra a API pública (curl direto no
+  // endpoint `api_publica_stf` retorna 404 "index_not_found_exception") e contra fonte
+  // independente (levantamento de aliases do DataJud) — o STF NÃO tem endpoint no DataJud
+  // público, diferente do STJ (segmento "3", coberto normalmente). Não é uma lacuna da nossa
+  // tabela a ser preenchida; é uma limitação real da API do CNJ. Por isso tem mensagem própria,
+  // em vez de cair no erro genérico de "tabela precisa ser expandida".
+  if (partes.segmento === "1") {
+    throw new Error(
+      `O STF (processo ${numeroCnj}) não é coberto pela API pública do DataJud — confirmado ` +
+        `diretamente contra a API (endpoint api_publica_stf não existe). Processos do STF não ` +
+        `podem ser monitorados por essa via; precisam de acompanhamento manual ou outra fonte.`
+    );
+  }
+
   let slug: string | undefined;
   switch (partes.segmento) {
     case "3":
@@ -102,6 +116,8 @@ export function resolverEndpointDatajud(numeroCnj: string): string {
       slug = TRIBUNAIS_TRABALHO[partes.tribunal];
       break;
     case "6":
+      // Tribunais eleitorais usam slug COM hífen (ex: "tre-sp") — confirmado ao vivo contra a
+      // API (a variante sem hífen, "tresp", retorna 404 index_not_found_exception).
       slug = TRIBUNAIS_ELEITORAIS[partes.tribunal];
       break;
     case "8":
@@ -191,8 +207,14 @@ export async function consultarProcessoDatajud(numeroCnj: string): Promise<Resul
     return { ok: true, movimentos: [] };
   }
 
-  const fonte = hits[0]?._source;
-  const movimentosBrutos: unknown[] = Array.isArray(fonte?.movimentos) ? fonte.movimentos : [];
+  // O mesmo numeroProcesso pode ter mais de um documento no índice — por exemplo, quando o
+  // processo já subiu para 2º grau, o G1 e o G2 costumam aparecer como hits separados (o `_id`
+  // desses documentos geralmente traz um sufixo indicando o grau, ex: "TJSP_G1_..."). Se
+  // olhássemos só hits[0], perderíamos a movimentação do outro grau inteiro. Por isso agregamos
+  // os movimentos de TODOS os hits retornados, não só do primeiro.
+  const movimentosBrutos: unknown[] = hits.flatMap((hit: { _source?: { movimentos?: unknown } }) =>
+    Array.isArray(hit?._source?.movimentos) ? (hit._source!.movimentos as unknown[]) : []
+  );
 
   const movimentos: MovimentoDatajud[] = movimentosBrutos
     .map((m) => {

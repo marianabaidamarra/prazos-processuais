@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/monitoramento-datajud",
-      "schedule": "0 9 * * *"
+      "schedule": "0 12 * * *"
     },
     {
       "path": "/api/cron/notificacoes",
-      "schedule": "0 11 * * *"
+      "schedule": "0 14 * * *"
     }
   ]
 }

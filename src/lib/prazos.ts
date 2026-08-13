@@ -11,6 +11,32 @@ export function normalizarData(data: Date): Date {
   return new Date(Date.UTC(data.getUTCFullYear(), data.getUTCMonth(), data.getUTCDate()));
 }
 
+const FORMATADOR_DIA_SAO_PAULO = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/**
+ * Retorna o dia civil atual em America/Sao_Paulo (Brasília), normalizado para meia-noite UTC —
+ * mesma representação usada em todo o resto do sistema para "datas puras" (sem hora).
+ *
+ * IMPORTANTE: nunca derivar "hoje" a partir de getUTCFullYear/Month/Date de `new Date()`
+ * diretamente (ex: `normalizarData(new Date())`) — isso reflete o dia civil em UTC, não em
+ * Brasília. Entre 21h e 23h59 de Brasília (horário de verão à parte, Brasília é sempre UTC-3),
+ * o dia UTC já virou o seguinte, fazendo um prazo aparecer como VENCIDO horas antes de vencer
+ * de fato. Esta função existe para ser o único ponto de conversão "agora" → "hoje" do sistema.
+ */
+export function hojeEmSaoPaulo(agora: Date = new Date()): Date {
+  const partes = FORMATADOR_DIA_SAO_PAULO.formatToParts(agora);
+  const mapa: Record<string, string> = {};
+  for (const parte of partes) {
+    if (parte.type !== "literal") mapa[parte.type] = parte.value;
+  }
+  return new Date(Date.UTC(Number(mapa.year), Number(mapa.month) - 1, Number(mapa.day)));
+}
+
 function proximoDiaUtilOuIgual(data: Date, feriadosExtras: Set<string>): Date {
   let cursor = data;
   while (!ehDiaUtilForense(cursor, feriadosExtras)) {
@@ -95,7 +121,7 @@ export type UrgenciaPrazo = "vencido" | "hoje" | "critico" | "atencao" | "tranqu
  *  - atencao: vence em até 7 dias
  *  - tranquilo: mais de 7 dias
  */
-export function classificarUrgencia(dataFinal: Date, hoje: Date = new Date()): UrgenciaPrazo {
+export function classificarUrgencia(dataFinal: Date, hoje: Date = hojeEmSaoPaulo()): UrgenciaPrazo {
   const hojeNorm = normalizarData(hoje);
   const finalNorm = normalizarData(dataFinal);
   const diffDias = Math.round((finalNorm.getTime() - hojeNorm.getTime()) / 86_400_000);
